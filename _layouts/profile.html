@@ -1,19 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ page.title }}</title>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css" integrity="sha384-cg6SkqEOCV1NbJoCu11+bm0NvBRc8IYLRGXkmNrqUBfTjmMYwNKPWBTIKyw9mHNJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/grids-responsive-min.css">
     <link rel="stylesheet" href="{{ "/assets/css/main.css" | relative_url }}">
+    <link rel="icon" href="{{ '/assets/favicon.ico' | relative_url }}" type="image/x-icon" />
+
+    {%- seo -%}
+    {%- feed_meta -%}
+    {%- include custom-head.html -%}
   </head>
+
   <body>
-    <div class="profile-container" style="max-width: 800px; margin: auto; padding: 2rem;">
-      <header style="text-align: center;">
-        <img src="{{ "/avatar.jpeg" | relative_url }}" alt="Avatar" style="width: 120px; border-radius: 50%;">
+    <div class="profile-container" style="max-width: 800px; margin: 3rem auto; padding: 2rem; font-family: inherit;">
+      <header style="text-align: center; margin-bottom: 2rem;">
+        <img src="{{ "/avatar.jpeg" | relative_url }}" alt="Avatar" style="width: 120px; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
         <h1>{{ page.title }}</h1>
       </header>
-      <main>
+      <main class="pure-u-1">
         {{ content }}
       </main>
     </div>
+
+    <script async src="https://use.fontawesome.com/releases/v5.0.12/js/all.js"></script>
+    {%- include scroll.html -%}
+
+    {%- if page.math -%}
+      {% include mathjax.html %}
+    {%- endif -%}
+
+    {%- if jekyll.environment == 'production' and site.google_analytics -%}
+      {%- include google-analytics.html -%}
+    {%- endif -%}
   </body>
 </html>
