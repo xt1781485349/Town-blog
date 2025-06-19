@@ -14,7 +14,7 @@
     {%- include custom-head.html -%}
   </head>
 
-  <body>
+ <body style="background-image: url('{{ "/bg.jpeg" | relative_url }}'); background-size: cover; background-position: center; background-repeat: no-repeat;background-attachment: fixed;">
     <div class="profile-container" style="max-width: 800px; margin: 3rem auto; padding: 2rem; font-family: inherit;">
       <header style="text-align: center; margin-bottom: 2rem;">
         <img src="{{ "/avatar.jpeg" | relative_url }}" alt="Avatar" style="width: 120px; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
