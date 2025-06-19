@@ -1,7 +1,7 @@
 ---
 layout: profile
-title: About Me
-permalink: /about/
+title: My Profile
+permalink: /profile/
 ---
 
 ## 👋 Hello, I'm Town
