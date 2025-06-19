@@ -14,7 +14,37 @@
     {%- include custom-head.html -%}
   </head>
 
- <body style="background-image: url('{{ "/bg.jpeg" | relative_url }}'); background-size: cover; background-position: center; background-repeat: no-repeat;background-attachment: fixed;">
+  <body>
+    <style>
+      body {
+        position: relative;
+        min-height: 100vh;
+        margin: 0;
+        background-image: url('{{ "/bg.jpeg" | relative_url }}');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+      body::before {
+        content: "";
+        position: fixed;  /* 固定铺满全屏 */
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: rgba(255, 255, 255, 0.5); /* 白色半透明遮罩，可调 */
+        pointer-events: none; /* 不影响鼠标事件 */
+        z-index: -1;  /* 放到背景层 */
+      }
+      .profile-container {
+        position: relative;
+        max-width: 800px;
+        margin: 3rem auto;
+        padding: 2rem;
+        font-family: inherit;
+        background-color: rgba(255, 255, 255, 0.85);
+        border-radius: 12px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      }
+    </style>
+
     <div class="profile-container" style="max-width: 800px; margin: 3rem auto; padding: 2rem; font-family: inherit;">
       <header style="text-align: center; margin-bottom: 2rem;">
         <img src="{{ "/avatar.jpeg" | relative_url }}" alt="Avatar" style="width: 120px; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
