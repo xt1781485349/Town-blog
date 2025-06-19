@@ -28,7 +28,7 @@ exclude:
   - not-pure-poole.gemspec
 
 # Optimize Jekyl SEO Tag
-X:
+twitter:
   username: Town
   card: summary
 logo: logo.png
@@ -56,4 +56,4 @@ sass:
 author:
   name: Town
   url: https://github.com/xt1781485349/
-  email: xt178148534@gmail.com
+  email: xt178148534@outtlook.com
