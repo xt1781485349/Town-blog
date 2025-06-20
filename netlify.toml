@@ -1,0 +1,14 @@
+[build]
+  publish = "_site"        # Jekyll 的构建输出目录
+  command = "jekyll build" # 构建命令（你也可以用 bundle exec jekyll build）
+
+[dev]
+  command = "jekyll serve"
+  targetPort = 4000
+  port = 8888
+  publish = "_site"
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin/index.html"
+  status = 200
