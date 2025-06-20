@@ -12,3 +12,6 @@
   from = "/admin"
   to = "/admin/index.html"
   status = 200
+
+[build.environment]
+RUBY_VERSION = "3.2.2"
