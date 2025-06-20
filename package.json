@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@auth0/auth0-react": "^2.3.0",
+    "jose": "^6.0.11"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^4.1.6"
+  }
+}

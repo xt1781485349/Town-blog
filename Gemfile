@@ -4,3 +4,5 @@ gemspec
 gem 'jekyll-compose', group: [:jekyll_plugins]
 
 gem 'listen', '~> 3.7'
+gem 'base64'
+gem 'bigdecimal'

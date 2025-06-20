@@ -1,6 +1,6 @@
 [build]
   publish = "_site"        # Jekyll 的构建输出目录
-  command = "jekyll build" # 构建命令（你也可以用 bundle exec jekyll build）
+  command = "bundle exec jekyll build" # 构建命令
 
 [dev]
   command = "jekyll serve"
