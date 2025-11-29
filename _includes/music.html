@@ -41,37 +41,49 @@
 <div id="player-bar"></div>
 
 <script>
-  /* 自动扫描 /assets/music/ 目录的所有音乐文件 */
-  const musicList = [
-    {% assign music_files = site.static_files %}
-    {% assign first_item = true %}
-    {% for file in music_files %}
-      {% assign ext = file.extname | downcase %}
-      {% if file.path contains "/assets/music/" and (ext == ".mp3" or ext == ".wav" or ext == ".ogg") %}
-        {% if first_item %}
-          {% assign first_item = false %}
-        {% else %},{% endif %}
-        {
-          name: "{{ file.basename }}",
-          artist: "未知",
-          url: "{{ file.path | relative_url }}",
-          cover: "{{ '/assets/music/cover.jpg' | relative_url }}"
-        }
-      {% endif %}
-    {% endfor %}
-  ];
+  /* 读取手动维护的 music-data.json 并初始化 APlayer */
+  fetch("{{ '/assets/music/music-data.json' | relative_url }}")
+    .then(res => res.json())
+    .then(data => {
+      const musicList = data.map(item => {
+        // 默认歌名/歌手
+        const name = item.name && item.name.trim() ? item.name : "未知";
+        const artist = item.artist && item.artist.trim() ? item.artist : "未知";
 
-  /* 初始化播放器 */
-  const ap = new APlayer({
-    container: document.getElementById('player-bar'),
-    fixed: true,
-    audio: musicList
-  });
+        // 默认封面
+        let coverFile = item.cover && item.cover.trim() ? item.cover : "cover.jpg";
+        // 拼接完整路径
+        let cover = "{{ '/assets/music/cover/' | relative_url }}" + coverFile;
+        
+        // 创建 Image 对象检测文件是否存在
+        let img = new Image();
+        img.src = coverPath;
+        img.onerror = function() {
+          // 文件不存在时使用默认封面
+          coverPath = "{{ '/assets/music/cover/cover.jpg' | relative_url }}";
+        };
+        return {
+          name: name,
+          artist: artist,
+          url: "{{ '/assets/music/' | relative_url }}" + item.file,
+          cover: cover
+        };
+      });
 
-  /* 点击图标展开/收起播放器 */
+      // 初始化 APlayer
+      const ap = new APlayer({
+        container: document.getElementById('player-bar'),
+        fixed: true,
+        audio: musicList,
+        listFolded: false,
+        order: 'list',
+        autoplay: false
+      });
+    });
+
+  // 悬浮按钮展开/收起播放器
   const btn = document.getElementById('music-btn');
   const bar = document.getElementById('player-bar');
-
   btn.onclick = function () {
     bar.classList.toggle('show');
   };
