@@ -1,0 +1,78 @@
+<!-- APlayer -->
+<link rel="stylesheet" href="https://unpkg.com/aplayer/dist/APlayer.min.css">
+<script src="https://unpkg.com/aplayer/dist/APlayer.min.js"></script>
+
+<style>
+  #music-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 42px;
+    height: 42px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50%;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 9999;
+    font-size: 20px;
+  }
+  #music-btn:hover {
+    background: rgba(255,255,255,1);
+  }
+  #player-bar {
+    position: fixed;
+    bottom: -100px;
+    left: 0;
+    width: 100%;
+    transition: 0.35s ease;
+    z-index: 9998;
+  }
+  #player-bar.show {
+    bottom: 0;
+  }
+</style>
+
+<!-- 悬浮按钮 + 播放器容器 -->
+<div id="music-btn">🎵</div>
+<div id="player-bar"></div>
+
+<script>
+  /* 自动扫描 /assets/music/ 目录的所有音乐文件 */
+  const musicList = [
+    {% assign music_files = site.static_files %}
+    {% assign first_item = true %}
+    {% for file in music_files %}
+      {% assign ext = file.extname | downcase %}
+      {% if file.path contains "/assets/music/" and (ext == ".mp3" or ext == ".wav" or ext == ".ogg") %}
+        {% if first_item %}
+          {% assign first_item = false %}
+        {% else %},{% endif %}
+        {
+          name: "{{ file.basename }}",
+          artist: "未知",
+          url: "{{ file.path | relative_url }}",
+          cover: "{{ '/assets/music/cover.jpg' | relative_url }}"
+        }
+      {% endif %}
+    {% endfor %}
+  ];
+
+  /* 初始化播放器 */
+  const ap = new APlayer({
+    container: document.getElementById('player-bar'),
+    fixed: true,
+    audio: musicList
+  });
+
+  /* 点击图标展开/收起播放器 */
+  const btn = document.getElementById('music-btn');
+  const bar = document.getElementById('player-bar');
+
+  btn.onclick = function () {
+    bar.classList.toggle('show');
+  };
+</script>
