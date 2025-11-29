@@ -27,14 +27,11 @@
 
   /* 播放器容器 */
   #player-bar {
-    position: fixed;       /* 固定在屏幕角落 */
-    bottom: 20px;
-    right: 20px;           /* 默认右下角，可拖拽移动 */
-    width: 320px;           /* 初始宽度，可自适应 */
-    max-width: 90%;         /* 屏幕宽度小于初始宽度时自适应 */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
     z-index: 99998;
-    cursor: move;
-    transition: width 0.2s, height 0.2s;
   }
 </style>
 
@@ -54,34 +51,7 @@
       bar.style.display = "none";
     }
   };
-  // 拖拽功能
-  let isDragging = false, offsetX = 0, offsetY = 0;
-  bar.addEventListener('mousedown', e => {
-    isDragging = true;
-    offsetX = e.clientX - bar.offsetLeft;
-    offsetY = e.clientY - bar.offsetTop;
-    bar.style.transition = 'none';
-  });
-  document.addEventListener('mousemove', e => {
-    if(isDragging){
-      let left = e.clientX - offsetX;
-      let top = e.clientY - offsetY;
-      // 限制在屏幕范围内
-      left = Math.max(0, Math.min(window.innerWidth - bar.offsetWidth, left));
-      top = Math.max(0, Math.min(window.innerHeight - bar.offsetHeight, top));
-      bar.style.left = left + 'px';
-      bar.style.top = top + 'px';
-      bar.style.right = 'auto';
-      bar.style.bottom = 'auto';
-    }
-  });
-  document.addEventListener('mouseup', () => {
-    if(isDragging){
-      isDragging = false;
-      bar.style.transition = '';
-      savePosition();
-    }
-  });
+
   // 读取 music.json 并初始化 APlayer
   fetch("{{ '/assets/music/music.json' | relative_url }}")
     .then(res => res.json())
