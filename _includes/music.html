@@ -38,112 +38,70 @@
   }
 </style>
 
+<!-- 悬浮按钮 + 播放器容器 -->
 <div id="music-btn">🎵</div>
 <div id="player-bar"></div>
 
 <script>
-const btn = document.getElementById('music-btn');
-const bar = document.getElementById('player-bar');
+  const btn = document.getElementById('music-btn');
+  const bar = document.getElementById('player-bar');
 
-// 点击按钮显示/隐藏播放器
-btn.onclick = function() {
-  if(bar.style.display === "none" || !bar.style.display){
-    bar.style.display = "block";
-  } else {
-    bar.style.display = "none";
-  }
-};
-
-// 拖拽功能
-let isDragging = false, offsetX = 0, offsetY = 0;
-bar.addEventListener('mousedown', e => {
-  isDragging = true;
-  offsetX = e.clientX - bar.offsetLeft;
-  offsetY = e.clientY - bar.offsetTop;
-  bar.style.transition = 'none';
-});
-document.addEventListener('mousemove', e => {
-  if(isDragging){
-    let left = e.clientX - offsetX;
-    let top = e.clientY - offsetY;
-    // 限制在屏幕范围内
-    left = Math.max(0, Math.min(window.innerWidth - bar.offsetWidth, left));
-    top = Math.max(0, Math.min(window.innerHeight - bar.offsetHeight, top));
-    bar.style.left = left + 'px';
-    bar.style.top = top + 'px';
-    bar.style.right = 'auto';
-    bar.style.bottom = 'auto';
-  }
-});
-document.addEventListener('mouseup', () => {
-  if(isDragging){
-    isDragging = false;
-    bar.style.transition = '';
-    savePosition();
-  }
-});
-
-// 保存位置
-function savePosition(){
-  localStorage.setItem('aplayerPos', JSON.stringify({left: bar.style.left, top: bar.style.top}));
-}
-
-// 恢复位置
-const savedPos = localStorage.getItem('aplayerPos');
-if(savedPos){
-  const pos = JSON.parse(savedPos);
-  bar.style.left = pos.left;
-  bar.style.top = pos.top;
-  bar.style.right = 'auto';
-  bar.style.bottom = 'auto';
-}
-
-// 读取 music.json 并初始化播放器
-fetch("{{ '/assets/music/music.json' | relative_url }}")
-.then(res => res.json())
-.then(data => {
-  const musicList = data.map(item => ({
-    name: item.name && item.name.trim() ? item.name : "未知",
-    artist: item.artist && item.artist.trim() ? item.artist : "未知",
-    url: "{{ '/assets/music/' | relative_url }}" + item.file,
-    cover: "{{ '/assets/music/cover/' | relative_url }}" + (item.cover && item.cover.trim() ? item.cover : "cover.jpg")
-  }));
-
-  const ap = new APlayer({
-    container: bar,
-    fixed: false,
-    audio: musicList,
-    listFolded: false,
-    order: 'list',
-    autoplay: false,
-    preload: 'auto'
+  // 点击按钮显示/隐藏播放器
+  btn.onclick = function() {
+    if(bar.style.display === "none" || !bar.style.display) {
+      bar.style.display = "block";
+    } else {
+      bar.style.display = "none";
+    }
+  };
+  // 拖拽功能
+  let isDragging = false, offsetX = 0, offsetY = 0;
+  bar.addEventListener('mousedown', e => {
+    isDragging = true;
+    offsetX = e.clientX - bar.offsetLeft;
+    offsetY = e.clientY - bar.offsetTop;
+    bar.style.transition = 'none';
   });
+  document.addEventListener('mousemove', e => {
+    if(isDragging){
+      let left = e.clientX - offsetX;
+      let top = e.clientY - offsetY;
+      // 限制在屏幕范围内
+      left = Math.max(0, Math.min(window.innerWidth - bar.offsetWidth, left));
+      top = Math.max(0, Math.min(window.innerHeight - bar.offsetHeight, top));
+      bar.style.left = left + 'px';
+      bar.style.top = top + 'px';
+      bar.style.right = 'auto';
+      bar.style.bottom = 'auto';
+    }
+  });
+  document.addEventListener('mouseup', () => {
+    if(isDragging){
+      isDragging = false;
+      bar.style.transition = '';
+      savePosition();
+    }
+  });
+  // 读取 music.json 并初始化 APlayer
+  fetch("{{ '/assets/music/music.json' | relative_url }}")
+    .then(res => res.json())
+    .then(data => {
+      const musicList = data.map(item => ({
+        name: item.name && item.name.trim() ? item.name : "未知",
+        artist: item.artist && item.artist.trim() ? item.artist : "未知",
+        url: "{{ '/assets/music/' | relative_url }}" + item.file,
+        cover: "{{ '/assets/music/cover/' | relative_url }}" + (item.cover && item.cover.trim() ? item.cover : "cover.jpg")
+      }));
 
-  // 恢复播放状态
-  const savedState = localStorage.getItem('aplayerState');
-  if(savedState){
-    const state = JSON.parse(savedState);
-    if(state.index !== undefined) ap.list.switch(state.index);
-    if(state.time !== undefined) ap.seek(state.time);
-    if(state.playing) ap.play();
-  }
-
-  // 保存播放状态
-  function saveState(){
-    const state = {
-      index: ap.list.index,
-      time: ap.audio.currentTime,
-      playing: !ap.audio.paused
-    };
-    localStorage.setItem('aplayerState', JSON.stringify(state));
-  }
-  ap.on('play', saveState);
-  ap.on('pause', saveState);
-  ap.on('ended', saveState);
-  ap.on('switch', saveState);
-  ap.on('timeupdate', saveState);
-});
-
-// 初始隐藏播放器
-bar.style.display = "none";
+      // 初始化 APlayer
+      const ap = new APlayer({
+        container: document.getElementById('player-bar'),
+        fixed: true,          // 固定底部
+        audio: musicList,
+        listFolded: false,
+        order: 'list',
+        autoplay: false,
+        preload: 'auto'
+      });
+    });
 </script>
