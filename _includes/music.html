@@ -3,7 +3,6 @@
 <script src="https://unpkg.com/aplayer/dist/APlayer.min.js"></script>
 
 <style>
-  /* 悬浮按钮 */
   #music-btn {
     position: fixed;
     top: 20px;
@@ -18,20 +17,22 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    z-index: 99999;
+    z-index: 9999;
     font-size: 20px;
   }
   #music-btn:hover {
     background: rgba(255,255,255,1);
   }
-
-  /* 播放器容器 */
   #player-bar {
     position: fixed;
-    bottom: 0;
+    bottom: -100px;
     left: 0;
     width: 100%;
-    z-index: 99998;
+    transition: 0.35s ease;
+    z-index: 9998;
+  }
+  #player-bar.show {
+    bottom: 0;
   }
 </style>
 
@@ -40,19 +41,7 @@
 <div id="player-bar"></div>
 
 <script>
-  const btn = document.getElementById('music-btn');
-  const bar = document.getElementById('player-bar');
-
-  // 点击按钮显示/隐藏播放器
-  btn.onclick = function() {
-    if(bar.style.display === "none" || !bar.style.display) {
-      bar.style.display = "block";
-    } else {
-      bar.style.display = "none";
-    }
-  };
-
-  // 读取 music-data.json 并初始化 APlayer
+    // 读取 music-data.json 并初始化 APlayer
   fetch("{{ '/assets/music/music-data.json' | relative_url }}")
     .then(res => res.json())
     .then(data => {
@@ -73,5 +62,13 @@
         autoplay: false,
         preload: 'auto'
       });
-    });
+  });
+
+  /* 点击图标展开/收起播放器 */
+  const btn = document.getElementById('music-btn');
+  const bar = document.getElementById('player-bar');
+
+  btn.onclick = function () {
+    bar.classList.toggle('show');
+  };
 </script>
