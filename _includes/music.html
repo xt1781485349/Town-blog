@@ -54,13 +54,13 @@
         let coverFile = item.cover && item.cover.trim() ? item.cover : "cover.jpg";
         // 拼接完整路径
         let cover = "{{ '/assets/music/cover/' | relative_url }}" + coverFile;
-        
+
         // 创建 Image 对象检测文件是否存在
         let img = new Image();
-        img.src = coverPath;
+        img.src = cover;
         img.onerror = function() {
           // 文件不存在时使用默认封面
-          coverPath = "{{ '/assets/music/cover/cover.jpg' | relative_url }}";
+          cover = "{{ '/assets/music/cover/cover.jpg' | relative_url }}";
         };
         return {
           name: name,
@@ -77,7 +77,8 @@
         audio: musicList,
         listFolded: false,
         order: 'list',
-        autoplay: false
+        autoplay: false,
+        preload: 'auto'
       });
     });
 
