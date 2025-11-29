@@ -3,6 +3,7 @@
 <script src="https://unpkg.com/aplayer/dist/APlayer.min.js"></script>
 
 <style>
+  /* 悬浮按钮 */
   #music-btn {
     position: fixed;
     top: 20px;
@@ -17,22 +18,21 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    z-index: 9999;
+    z-index: 99999;
     font-size: 20px;
   }
   #music-btn:hover {
     background: rgba(255,255,255,1);
   }
+
+  /* 播放器容器 */
   #player-bar {
     position: fixed;
-    bottom: -100px;
+    bottom: 0;
     left: 0;
     width: 100%;
-    transition: 0.35s ease;
-    z-index: 9998;
-  }
-  #player-bar.show {
-    bottom: 0;
+    z-index: 99998;
+    display: none; /* 初始隐藏 */
   }
 </style>
 
@@ -41,39 +41,33 @@
 <div id="player-bar"></div>
 
 <script>
-  /* 读取手动维护的 music-data.json 并初始化 APlayer */
+  const btn = document.getElementById('music-btn');
+  const bar = document.getElementById('player-bar');
+
+  // 点击按钮显示/隐藏播放器
+  btn.onclick = function() {
+    if(bar.style.display === "none" || !bar.style.display) {
+      bar.style.display = "block";
+    } else {
+      bar.style.display = "none";
+    }
+  };
+
+  // 读取 music-data.json 并初始化 APlayer
   fetch("{{ '/assets/music/music-data.json' | relative_url }}")
     .then(res => res.json())
     .then(data => {
-      const musicList = data.map(item => {
-        // 默认歌名/歌手
-        const name = item.name && item.name.trim() ? item.name : "未知";
-        const artist = item.artist && item.artist.trim() ? item.artist : "未知";
-
-        // 默认封面
-        let coverFile = item.cover && item.cover.trim() ? item.cover : "cover.jpg";
-        // 拼接完整路径
-        let cover = "{{ '/assets/music/cover/' | relative_url }}" + coverFile;
-
-        // 创建 Image 对象检测文件是否存在
-        let img = new Image();
-        img.src = cover;
-        img.onerror = function() {
-          // 文件不存在时使用默认封面
-          cover = "{{ '/assets/music/cover/cover.jpg' | relative_url }}";
-        };
-        return {
-          name: name,
-          artist: artist,
-          url: "{{ '/assets/music/' | relative_url }}" + item.file,
-          cover: cover
-        };
-      });
+      const musicList = data.map(item => ({
+        name: item.name && item.name.trim() ? item.name : "未知",
+        artist: item.artist && item.artist.trim() ? item.artist : "未知",
+        url: "{{ '/assets/music/' | relative_url }}" + item.file,
+        cover: "{{ '/assets/music/cover/' | relative_url }}" + (item.cover && item.cover.trim() ? item.cover : "cover.jpg")
+      }));
 
       // 初始化 APlayer
       const ap = new APlayer({
         container: document.getElementById('player-bar'),
-        fixed: true,
+        fixed: true,          // 固定底部
         audio: musicList,
         listFolded: false,
         order: 'list',
@@ -81,11 +75,4 @@
         preload: 'auto'
       });
     });
-
-  // 悬浮按钮展开/收起播放器
-  const btn = document.getElementById('music-btn');
-  const bar = document.getElementById('player-bar');
-  btn.onclick = function () {
-    bar.classList.toggle('show');
-  };
 </script>
