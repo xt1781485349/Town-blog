@@ -1,4 +1,84 @@
 <!-- APlayer -->
+<!-- <link rel="stylesheet" href="https://unpkg.com/aplayer/dist/APlayer.min.css">
+<script src="https://unpkg.com/aplayer/dist/APlayer.min.js"></script>
+
+<style>
+  /* 悬浮按钮 */
+  #music-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 42px;
+    height: 42px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50%;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 99999;
+    font-size: 20px;
+  }
+  #music-btn:hover {
+    background: rgba(255,255,255,1);
+  }
+
+  /* 播放器容器 */
+  #player-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 99998;
+  }
+</style> -->
+
+<!-- 悬浮按钮 + 播放器容器 -->
+<!-- <div id="music-btn">🎵</div>
+<div id="player-bar"></div>
+
+<script>
+  const btn = document.getElementById('music-btn');
+  const bar = document.getElementById('player-bar');
+
+  // 点击按钮显示/隐藏播放器
+  btn.onclick = function() {
+    if(bar.style.display === "none" || !bar.style.display) {
+      bar.style.display = "block";
+    } else {
+      bar.style.display = "none";
+    }
+  };
+
+  // 读取 music-data.json 并初始化 APlayer
+  fetch("{{ '/assets/music/music-data.json' | relative_url }}")
+    .then(res => res.json())
+    .then(data => {
+      const musicList = data.map(item => ({
+        name: item.name && item.name.trim() ? item.name : "未知",
+        artist: item.artist && item.artist.trim() ? item.artist : "未知",
+        url: "{{ '/assets/music/' | relative_url }}" + item.file,
+        cover: "{{ '/assets/music/cover/' | relative_url }}" + (item.cover && item.cover.trim() ? item.cover : "cover.jpg")
+      }));
+
+      // 初始化 APlayer
+      const ap = new APlayer({
+        container: document.getElementById('player-bar'),
+        fixed: true,          // 固定底部
+        audio: musicList,
+        listFolded: false,
+        order: 'list',
+        autoplay: false,
+        preload: 'auto'
+      });
+    });
+</script> -->
+
+
+
+<!-- APlayer -->
 <link rel="stylesheet" href="https://unpkg.com/aplayer/dist/APlayer.min.css">
 <script src="https://unpkg.com/aplayer/dist/APlayer.min.js"></script>
 
@@ -41,27 +121,26 @@
 <div id="player-bar"></div>
 
 <script>
-    // 读取 music-data.json 并初始化 APlayer
-  fetch("{{ '/assets/music/music-data.json' | relative_url }}")
-    .then(res => res.json())
-    .then(data => {
-      const musicList = data.map(item => ({
-        name: item.name && item.name.trim() ? item.name : "未知",
-        artist: item.artist && item.artist.trim() ? item.artist : "未知",
-        url: "{{ '/assets/music/' | relative_url }}" + item.file,
-        cover: "{{ '/assets/music/cover/' | relative_url }}" + (item.cover && item.cover.trim() ? item.cover : "cover.jpg")
-      }));
+  /* 自动扫描 /assets/music/ 目录的所有音乐文件 */
+  const musicList = [
+    {% assign music_files = site.static_files | where_exp:"file","file.path contains 'assets/music'" %}
+    {% for file in music_files %}
+      {% if file.extname == ".mp3" or file.extname == ".wav" or file.extname == ".ogg" %}
+      {
+        name: "{{ file.basename }}",
+        artist: "未知",
+        url: "{{ file.path | relative_url }}",
+        cover: "{{ '/assets/music/cover.jpg' | relative_url }}"
+      }{% unless forloop.last %},{% endunless %}
+      {% endif %}
+    {% endfor %}
+  ];
 
-      // 初始化 APlayer
-      const ap = new APlayer({
-        container: document.getElementById('player-bar'),
-        fixed: true,          // 固定底部
-        audio: musicList,
-        listFolded: false,
-        order: 'list',
-        autoplay: false,
-        preload: 'auto'
-      });
+  /* 初始化播放器 */
+  const ap = new APlayer({
+    container: document.getElementById('player-bar'),
+    fixed: true,
+    audio: musicList
   });
 
   /* 点击图标展开/收起播放器 */
